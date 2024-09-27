@@ -21,3 +21,7 @@
 -Explore regex in routes /a/ /.fly/
 -Reading the query params in routes 
 -Reading the dynamic routes 
+
+-multiple Route handlers
+-next()
+-next fucntion and along with res.send()

@@ -8,8 +8,15 @@ const { adminAuth, userAuth } = require("./middlewares/auth.js");
 
 app.use("/admin", adminAuth);
 // app.use("/user", userAuth);
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("Something went wrong");
+  }
+});
 
 app.get("/user", userAuth, (req, res) => {
+
+  throw new Error("orwqjrqpwirwper")
   res.send("User Data Sent");
 });
 
@@ -19,6 +26,12 @@ app.get("/admin/getAllData", (req, res) => {
 
 app.delete("/admin/deleteUser", (req, res) => {
   res.send("Deleted a user");
+});
+
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("Something went wrong");
+  }
 });
 
 app.listen(7777, () => {

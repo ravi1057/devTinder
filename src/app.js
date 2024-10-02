@@ -76,14 +76,33 @@ app.delete("/user", async (req, res) => {
 
 // Update a user from database
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
   const data = req.body;
   try {
-    await User.findByIdAndUpdate({ _id: userId }, data,{runValidators: true});
+    const ALLOWED_UPDATES = [
+      "userId",
+      "photoUrl",
+      "about",
+      "age",
+      "skills",
+      "gender",
+    ];
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed");
+    }
+    if(data?.skills.length>10){
+        throw new Error("Skill canot be more that 10")
+    }
+    await User.findByIdAndUpdate({ _id: userId }, data, {
+      runValidators: true,
+    });
     res.send("User updated Successfully!");
   } catch (err) {
-    res.status(400).send("Update User Failed:"+err.message);
+    res.status(400).send("Update User Failed:" + err.message);
   }
 });
 
@@ -96,7 +115,7 @@ app.patch("/user", async (req, res) => {
     await User.findByIdAndUpdate({ emailId: userEmail }, data);
     res.send("User updated with email Successfully!!");
   } catch (err) {
-    res.status(400).send("Update User Email Failed:"+err.message);
+    res.status(400).send("Update User Email Failed:" + err.message);
   }
 });
 

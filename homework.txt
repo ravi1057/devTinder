@@ -63,7 +63,11 @@
 -Improve the DB Shcema - PUT all appropiate validations on each field in Schema
 -Add timestamps to userschema
 -Add Api validation on PUT Requests and signup post api
-- DATA Sanitizing -Add API validation for each field
+-DATA Sanitizing -Add API validation for each field
+-Install validdator
+-Explore validator library functions and use validator funcs for email,password,photoUrl
+-NEVER Trust reb.body
+
 
 
 

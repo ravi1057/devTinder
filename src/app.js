@@ -2,18 +2,54 @@ const express = require("express");
 const connectDB = require("./config/database.js");
 const app = express();
 const User = require("./models/user.js");
+const bcrypt = require("bcrypt");
+const { validateSingUpData } = require("./utils/validation.js");
 
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  //Create a new instance of user model
-
-  const user = new User(req.body);
   try {
+    //Validation of Data
+    validateSingUpData(req);
+
+    const { firstName, lastName, emailId, password } = req.body;
+
+    //Encrypt the password
+    const hashPassword = await bcrypt.hash(password, 10);
+    console.log(hashPassword, "===>hashPassword");
+
+    //Create a new instance of user model
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: hashPassword,
+    });
+
     await user.save();
     res.send("User added Succesfully!");
   } catch (err) {
-    res.status(400).send("Error saving the user:" + err.message);
+    res.status(400).send("ERROR:" + err.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+
+    const user = await User.findOne({ emailId });
+    if (!user) {
+      throw new Error("Invalid Credentails");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      res.send("Loin Successful");
+    } else {
+      throw new Error("Invalid Credentails");
+    }
+  } catch (err) {
+    res.status(400).send("ERROR:" + err.message);
   }
 });
 
@@ -94,8 +130,8 @@ app.patch("/user/:userId", async (req, res) => {
     if (!isUpdateAllowed) {
       throw new Error("Update not allowed");
     }
-    if(data?.skills.length>10){
-        throw new Error("Skill canot be more that 10")
+    if (data?.skills.length > 10) {
+      throw new Error("Skill canot be more that 10");
     }
     await User.findByIdAndUpdate({ _id: userId }, data, {
       runValidators: true,

@@ -69,6 +69,14 @@
 -NEVER Trust reb.body
 
 
+-Validate data in Signup API
+-Install bcrypt package
+-Create  passwordHash Using bcrypt.hash & save the user is encrypted password
+-Create Login API 
+-Compare passwords and throw errors if email or password is invalid
+
+
+
 
 
 

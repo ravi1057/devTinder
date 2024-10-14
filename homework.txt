@@ -76,6 +76,19 @@
 -Compare passwords and throw errors if email or password is invalid
 
 
+-Instal cookie-paraser
+-just send dummy cookie to user
+-Create GET/profile API and check if you get the cookie back
+-Install jsonwebtoken
+-In Login API,after email and password validation,create a JWT token  and send it to user in cookie
+-read the cookies inside you profile API and find the logged in user
+-UserAuth middleware
+-Add the UserAuth middleware in profile API and new SendConnectionRequest
+-Set the expiry time of JWT token and cookies to 7 days
+-Create UserSchema method to getJWT()
+-Create UserSchema method to comparePassword(passwordInputByUser)
+
+
 
 
 

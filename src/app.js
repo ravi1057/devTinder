@@ -3,9 +3,13 @@ const connectDB = require("./config/database.js");
 const app = express();
 const User = require("./models/user.js");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+var cookieParser = require("cookie-parser");
 const { validateSingUpData } = require("./utils/validation.js");
+const { userAuth } = require("./middlewares/auth.js");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
@@ -16,7 +20,6 @@ app.post("/signup", async (req, res) => {
 
     //Encrypt the password
     const hashPassword = await bcrypt.hash(password, 10);
-    console.log(hashPassword, "===>hashPassword");
 
     //Create a new instance of user model
     const user = new User({
@@ -42,8 +45,14 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid Credentails");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
+      //Create JWT Token
+      const token = await user.getJWT();
+
+      //Add the token to cookie and send the response back to the user
+
+      res.cookie("token", token);
       res.send("Loin Successful");
     } else {
       throw new Error("Invalid Credentails");
@@ -53,106 +62,21 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Get user by Id
+// Get user profile
 
-app.get("/user/:id", async (req, res) => {
-  const userId = req.params.id;
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    console.log(userId);
-    const user = await User.findById(userId);
-    if (!user) {
-      res.status(404).send("User not found");
-    } else {
-      res.send(user);
-    }
-  } catch (error) {
-    res.status(400).send("Something went wrong");
-  }
-});
-
-//  Get user by email
-
-app.get("/user", async (req, res) => {
-  const userEmail = req.body.emailId;
-  try {
-    const user = await User.findOne({ emailId: userEmail });
-    if (!user) {
-      res.status(404).send("User not found");
-    } else {
-      res.send(user);
-    }
+    const user = req.user;
+    res.send(user);
   } catch (err) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send("ERROR:" + err.message);
   }
 });
 
-//  Feed API - GET /feed  -get all the users from database
-
-app.get("/feed", async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.send(users);
-  } catch (error) {
-    res.status(400).send("Something went wrong");
-  }
-});
-
-// delete a user from database
-
-app.delete("/user", async (req, res) => {
-  const userId = req.body.userId;
-  try {
-    // const user = await User.findByIdAndDelete({ _id: userId });
-    const user = await User.findByIdAndDelete(userId); //Both are same
-    res.send("User deleted Successfully!");
-  } catch (err) {
-    res.status(400).send("Something went wrong");
-  }
-});
-
-// Update a user from database
-
-app.patch("/user/:userId", async (req, res) => {
-  const userId = req.params.userId;
-  const data = req.body;
-  try {
-    const ALLOWED_UPDATES = [
-      "userId",
-      "photoUrl",
-      "about",
-      "age",
-      "skills",
-      "gender",
-    ];
-    const isUpdateAllowed = Object.keys(data).every((k) =>
-      ALLOWED_UPDATES.includes(k)
-    );
-    if (!isUpdateAllowed) {
-      throw new Error("Update not allowed");
-    }
-    if (data?.skills.length > 10) {
-      throw new Error("Skill canot be more that 10");
-    }
-    await User.findByIdAndUpdate({ _id: userId }, data, {
-      runValidators: true,
-    });
-    res.send("User updated Successfully!");
-  } catch (err) {
-    res.status(400).send("Update User Failed:" + err.message);
-  }
-});
-
-//Update a user with emailId
-
-app.patch("/user", async (req, res) => {
-  const userEmail = req.body.emailId;
-  const data = req.body;
-  try {
-    await User.findByIdAndUpdate({ emailId: userEmail }, data);
-    res.send("User updated with email Successfully!!");
-  } catch (err) {
-    res.status(400).send("Update User Email Failed:" + err.message);
-  }
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+  const user = req.user;
+  console.log("Sending Connection Request!!");
+  res.send(user.firstName + " User with FirstName");
 });
 
 connectDB()

@@ -23,7 +23,6 @@ const userAuth = async (req, res, next) => {
     res.status(400).send("ERROR :" + err.message);
   }
 
-  //Find the User
 };
 
 module.exports = {

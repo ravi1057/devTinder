@@ -1,6 +1,7 @@
 const validator = require("validator");
 
 const validateSingUpData = (req) => {
+
   const { firstName, lastName, emailId, password } = req.body;
 
   if (!firstName || !lastName) {
@@ -12,6 +13,24 @@ const validateSingUpData = (req) => {
   }
 };
 
+const validateEditProfileData = (req) => {
+  const allowedEditFileds = [
+    "firstName",
+    "lastName",
+    "emailId",
+    "photoUrl",
+    "age",
+    "about",
+    "gender",
+    "skills",
+  ];
+  const isEditAllowed = Object.keys(req.body).every((filed) =>
+    allowedEditFileds.includes(filed)
+  );
+  return isEditAllowed;
+};
+
 module.exports = {
   validateSingUpData,
+  validateEditProfileData,
 };

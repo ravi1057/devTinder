@@ -46,13 +46,20 @@ authRouter.post("/login", async (req, res) => {
       //Add the token to cookie and send the response back to the user
 
       res.cookie("token", token);
-      res.send("Loin Successful");
+      res.send("Login Successful");
     } else {
       throw new Error("Invalid Credentails");
     }
   } catch (err) {
     res.status(400).send("ERROR:" + err.message);
   }
+});
+
+authRouter.post("/logout", async (req, res) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  });
+  res.send("Logout Successful");
 });
 
 module.exports = authRouter;

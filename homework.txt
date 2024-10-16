@@ -88,13 +88,34 @@
 -Create UserSchema method to getJWT()
 -Create UserSchema method to comparePassword(passwordInputByUser)
 
--Explore Tinder APIS 
--Create a list all API you can think of Dev Tinder
--Group multiple routers under respective routes
+- Explore Tinder APIS 
+- Create a list all API you can think of Dev Tinder
+- Group multiple routers under respective routes
 - Read the documentation for express.router
 - Create Routes folder for  managing auth,profile,request routers
 - Create authRouter,profileRouter,requestRouter
 - Import these routes in app.js
+
+- Create POST /logout API
+- Create PATCH /profile/edit
+- Create PATCh /profile/password API =>Forgot password API
+- Make you validate all the data in every POST,PATCH APIS
+
+
+
+
+- Create Connection Request Schema 
+- Send Connection Request API
+- Proper validation For Data
+- Think all about corner cases 
+- schema.pre("save") function
+- $or query $ $and 
+- Read more about indexes in mongo db
+- Why do we need index in mongo DB ?
+- What is advantages and disadvatages of indexes ?
+- Read this article about compound indexes
+
+
 
 
 
